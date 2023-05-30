@@ -3,6 +3,10 @@ const app = express();
 const { buildSchema } = require("graphql");
 const { graphqlHTTP } = require("express-graphql");
 
+// require axios for make external api calls
+
+const axios = require("axios");
+
 
 
 
@@ -27,11 +31,22 @@ type User {
     mobile : Int
 }
 
+type Post {
+    userId:Int,
+    id:Int,
+    title:String,
+    body:String
+}
+
 type Query {
     hello:String
     welcomeMsg(name:String, date:Int!):String 
     getUser : User
+    getPosts:[Post]
 }
+
+
+
 `)
 
 
@@ -41,6 +56,24 @@ const root = {
     },
     welcomeMsg: (args) => {
         return `Hey, ${args.name} how's life going! Today date is ${args.date}`
+    },
+    getUser: () => {
+        const user = {
+            name: "navneet",
+            age: 23,
+            email: "navneet@mail.com",
+            mobile: 9865365696
+        }
+        return user
+    },
+    getPosts: async () => {
+        try {
+            const posts = await axios.get("https://jsonplaceholder.typicode.com/posts")
+            return posts.data;
+        }
+        catch (error) {
+            return error
+        }
     }
 }
 
