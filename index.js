@@ -23,12 +23,23 @@ Inside graphql we have certain scaler type builtIN
 -Boolean
 */
 
+
+ const user = [];
 const schema = buildSchema(`
 type User {
+    userId: Int
     name : String,
     age : Int,
     email : String,
-    mobile : Int
+    mobile : String
+}
+
+type Product {
+    id : Int
+    title: String,
+    price : Float,
+    imageUrl:String,
+    description : String
 }
 
 type Post {
@@ -43,6 +54,15 @@ type Query {
     welcomeMsg(name:String, date:Int!):String 
     getUser : User
     getPosts:[Post]
+    findProductWithSQL(id:Int) : [Product]
+    getAllProduct : [Product]
+}
+
+type Mutation{
+    createUser(userId: Int, name:String,age:Int, email:String,mobile:String):String
+    getUser(userId:Int) :User
+    createProductWithSQL(title:String, price:Float, imageUrl:String, description:String) : String
+  
 }
 
 
@@ -74,6 +94,37 @@ const root = {
         catch (error) {
             return error
         }
+    },
+    createUser : ({userId, name, age, email, mobile}) =>{
+        user.push({userId, name, age, email, mobile});
+        console.log("user", user);
+        return `User added successfully`;
+    },
+    getUser:({userId}) =>{
+         const data = user.filter((r)=>r.userId === userId)
+         console.log("return", data);
+         return data[0];
+    },
+    createProductWithSQL : async ({title, price, imageUrl, description}) =>{
+        try{
+        const response = await axios.post("http://localhost:4948/api/product", {title,price,imageUrl,description})
+        console.log("response", response);
+        return response.data.message;
+        }
+        catch(error){
+            return error;
+        }
+
+    }, 
+    findProductWithSQL : async ({id}) =>{
+        const data = await axios.get(`http://localhost:4948/api/getproduct?prodId=${id}`)
+        console.log("data", data.data.product);
+        return data.data.product
+
+    },
+    getAllProduct : async () =>{
+        const {data} = await axios.get("http://localhost:4948/api/getproducts")
+        return data.result
     }
 }
 
