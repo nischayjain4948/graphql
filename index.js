@@ -62,6 +62,8 @@ type Mutation{
     createUser(userId: Int, name:String,age:Int, email:String,mobile:String):String
     getUser(userId:Int) :User
     createProductWithSQL(title:String, price:Float, imageUrl:String, description:String) : String
+    deleteProductWithSQL(id:Int) : String
+    updateProductWithSQL(id:Int, title:String, price:Float, imageUrl:String, description:String) : String
   
 }
 
@@ -125,7 +127,33 @@ const root = {
     getAllProduct : async () =>{
         const {data} = await axios.get("http://localhost:4948/api/getproducts")
         return data.result
+    },
+    deleteProductWithSQL : async ({id}) =>{
+        try{
+        const {data} = await axios.delete(`http://localhost:4948/api/deleteproduct/${id}`)
+         return data.message;
+        }
+        catch(error){
+            return error;
+        }
+
+    },
+    updateProductWithSQL : async ({id,title,price,imageUrl,description}) =>{
+        try{
+            const {data} = await axios.patch(`http://localhost:4948/api/updateproduct/${id}`, {title,price,imageUrl,description})
+            return data.message;
+            console.log("Product updated", result);
+
+
+        }
+        catch(error){
+            console.log("error", error);
+            return error;
+        }
+
     }
+
+
 }
 
 
