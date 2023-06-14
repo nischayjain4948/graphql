@@ -80,7 +80,6 @@ type Mutation{
 
 `)
 
-
 const root = {
     hello: () => {
         return "Hello World!"
